@@ -13,7 +13,7 @@ function build.all()
 
     local -r allStartTime=$(timer.getTimestamp)
     cd "$top"
-    local logDir="${top}/logs"
+    local logDir="$(readlink -f "$top")/logs"
     [ -d "$logDir" ] || mkdir -p "$logDir"
 
     local updateTo
@@ -28,11 +28,12 @@ function build.all()
     local cbf_version="${CBF_VERSION:-}"
     if [ -z "${CBF_VERSION:-}" ]; then
         if [ -d "${top}/container_build_framework" ]; then
-            cbf_version="$(build.cbfVersion)"
+            cbf_version="$(build.cbfVersion)" || trap.die "Unable to save CBF to Artifactory."'\n'
         else
             cbf_version='master'
         fi
     fi
+
     echo "Container Build Framework version: $cbf_version"
     echo "kafka servers:  ${KAFKA_BOOTSTRAP_SERVERS:-}"
     echo
@@ -82,7 +83,7 @@ function build.canPush()
     local -r revision=${1:?}
 
     [ "${BUILD_PUSH:-0}" != 0 ] && return 0
-    if [[ "$revision" = *dirty ]]; then
+    if [[ "$revision" = *dirty* ]]; then
         echo -n '    '
         echo -en '\e[93m'
         echo -n 'This image will not be pushed to the docker registry because it was built from a dirty repo'
@@ -100,9 +101,10 @@ function build.cbfVersion()
     [ -e container_build_framework/.git ] || trap.die 'CBF is not a git directory'
 
     local filename="$(git.origin 'container_build_framework')"
-    [[ "$filename" == *-dirty* ]] && trap.die 'Please commit CBF directory prior to uploading to Artifactory'
+    [[ "$filename" == *-dirty* ]] && return 1
 
     custom.cbfVersion
+    return 0
 }
 export -f build.cbfVersion
 
@@ -133,15 +135,15 @@ function build.containersForOS()
     local osStartTime=$(timer.getTimestamp)
 
     export CBF_VERSION
-    export CFG_GITHUB_EMAIL=''
-    export CFG_GITHUB_HUBOT_TOKEN=''
-    export CFG_GITHUB_JENKINS_EMAIL=''
-    export CFG_GITHUB_JENKINS_NAME=''
-    export CFG_GITHUB_JENKINS_TOKEN=''
-    export CFG_GITHUB_JENKINS_USER=''
-    export CFG_GITHUB_NAME=''
-    export CFG_GITHUB_TOKEN=''
-    export CFG_GITHUB_USER=''
+    export CFG_EMAIL=''
+    export CFG_HUBOT_TOKEN=''
+    export CFG_JENKINS_EMAIL=''
+    export CFG_JENKINS_NAME=''
+    export CFG_JENKINS_TOKEN=''
+    export CFG_JENKINS_USER=''
+    export CFG_NAME=''
+    export CFG_TOKEN=''
+    export CFG_USER=''
     export CFG_PASS=''
     export CFG_SLACK_HUBOT_TOKEN=''
     export CFG_USER=''
@@ -258,7 +260,7 @@ function build.dependencyInfo()
             *)
                 echo "$line";;
         esac
-    done < <(git.status '--porcelain')
+    done < <(git.status --porcelain)
 
     # add our cbf version
     local localDir
@@ -270,7 +272,7 @@ function build.dependencyInfo()
 
     elif [ $(basename "$(pwd)") = 'base_container' ]; then
         if [ -d "../container_build_framework" ]; then
-            export CBF_VERSION=$(git.origin '../container_build_framework')
+            export CBF_VERSION=$(git.origin ../container_build_framework)
         elif [ "${CBF_VERSION:-}" ]; then
             :
         else
@@ -354,6 +356,33 @@ function build.logger()
 export -f build.logger
 
 #----------------------------------------------------------------------------------------------
+function build.logImageInfo()
+{
+    local -r image=${1:?}
+    local -r dc_yaml=${2:?}
+
+    local containerOS="${image#*/}"
+    containerOS="${containerOS%%/*}"
+
+    local json="$(docker inspect "$image" | jq '.[].Config.Labels')"
+    local depLog="${containerOS}.dependencies.log"
+    [ -e "$depLog" ] || touch "$depLog"
+
+    printf '%s :: pulling %s\n' "$(TZ='America/New_York' date)" "$image" >> "$depLog"
+    echo '    refs:           '$(jq -r '."container.git.refs"' <<< "$json") >> "$depLog"
+    echo '    commitId:       '$(jq -r '."container.git.commit"' <<< "$json") >> "$depLog"
+    echo '    repo:           '$(jq -r '."container.git.url"' <<< "$json") >> "$depLog"
+    echo '    fingerprint:    '$(jq -r '."container.fingerprint"' <<< "$json") >> "$depLog"
+    echo '    revision:       '$(jq -r '."container.origin"' <<< "$json") >> "$depLog"
+    echo '    build.time:     '$(jq -r '."container.build.time"' <<< "$json") >> "$depLog"
+    echo '    original.name:  '$(jq -r '."container.original.name"' <<< "$json") >> "$depLog"
+
+    build.dependencyInfo "$(build.dockerCompose "$dc_yaml")" >> "$depLog"
+    printf '\n\n\n' >> "$depLog"
+}
+export -f build.logImageInfo
+
+#----------------------------------------------------------------------------------------------
 function build.logToKafka()
 {
     if [ -z "${KAFKA_BOOTSTRAP_SERVERS:-}" ]; then
@@ -400,8 +429,8 @@ function build.logToKafka()
 
     # now log our data to kafka
     ("$kafka_producer" --server "$KAFKA_BOOTSTRAP_SERVERS"                     \
-                      --topic 'container_build_data'                          \
-                       --value "$( json.encodeHash '--' "${build_data[@]}" )") || :
+                       --topic 'container_build_data'                          \
+                       --value "$( json.encodeHash '--' "${build_data[@]}" )" &) || :
     return 0
 }
 export -f build.logToKafka
@@ -475,14 +504,14 @@ function build.module()
         # this on Jenkins
         :> "$PROGRESS_LOG"
         local logBase="${logDir}/$dir"
-        (build.updateContainer "$compose_yaml" "$taggedImage" "$actualImage" "$CONTAINER_ORIGIN" >"../${logBase}.out" 2>"../${logBase}.err") \
+        (build.updateContainer "$compose_yaml" "$taggedImage" "$actualImage" "$CONTAINER_ORIGIN" >"${logBase}.out" 2>"${logBase}.err") \
           && status=$? || status=$?
-        [ $status -eq 9 ] && rm "../${logBase}.out"
+        [ $status -eq 9 ] && rm "${logBase}.out"
 
         # show location of log files if they have any content
         local log_display_base="${BUILD_URL}artifact/$logBase"
-        [ -s "../${logBase}.out" ] && echo "    STDOUT log:  ${log_display_base}.out/*view*/"
-        [ -s "../${logBase}.err" ] && echo "    STDERR log:  ${log_display_base}.err/*view*/"
+        [ -s "${logBase}.out" ] && echo "    STDOUT log:  ${log_display_base}.out/*view*/"
+        [ -s "${logBase}.err" ] && echo "    STDERR log:  ${log_display_base}.err/*view*/"
 
         if [ $status -ne 0 ] && [ $status -ne 9 ]; then
           term.log "\n"
@@ -492,13 +521,13 @@ function build.module()
           echo
           echo  'STDOUT:'
           echo
-          tail -30 ../${logBase}.out
+          tail -30 ${logBase}.out
           echo
           echo '----------------------------------------------------------------------------------------------'
           echo
           echo  'STDERR:'
           echo
-          tail -30 ../${logBase}.err
+          tail -30 ${logBase}.err
           echo
           echo '----------------------------------------------------------------------------------------------'
         fi
@@ -593,6 +622,7 @@ function build.updateContainer()
         if docker pull "$actualImage" 2>/dev/null; then
             # downloaded image from registry
             build.changeImage "$taggedImage" "$actualImage"
+            build.logImageInfo "$taggedImage" "$compose_yaml"
             if [ "${BUILD_PUSH:-0}" != 0 ]; then
                 build.logger "pushing ${taggedImage} to registry"
                 build.pushImage "$taggedImage" "$actualImage"
@@ -647,6 +677,20 @@ function build.verifyModules()
     done
 }
 export -f build.verifyModules
+
+#----------------------------------------------------------------------------------------------
+function build.wrapper()
+{
+    if [ -z "${BUILD_URL:-}" ]; then
+        local logFile="$(pwd)/bld.log"
+        echo 'build.all "$@" 2>&1 | tee '"$logFile"
+        build.all "$@" 2>&1 | tee "$logFile" ||:
+    else
+        echo 'build.all "$@"'
+        build.all "$@"
+    fi
+}
+export -f build.wrapper
 
 #----------------------------------------------------------------------------------------------
 function build.yamlToJson()
