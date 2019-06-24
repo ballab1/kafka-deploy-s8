@@ -71,7 +71,7 @@ function deploy.__initGlobals()
 
     # enable container logging during startup
     : ${DEBUG_TRACE:=0}
-    export DEBUG_TRACE=$(( DEBUG_TRACE++ )) ||:
+    export DEBUG_TRACE=$(( ++DEBUG_TRACE )) ||:
 
 
     # import our setup configuration
@@ -128,25 +128,30 @@ function deploy.containerVersion()
     local -r line=${1:?}
     local -r json=${2:?}
 
-    local awkCode
-    read -r -d '?' awkCode <<'EOF'
-split($0,arr,"$");
-for (i in arr) {
-  if (i == 1)
-    x = arr[i];
-  else if (i == 2)
-    x = x "$" arr[i];
-  else {
-    sub("{.+-", "", arr[i]);
-    sub("}", "", arr[i]);
-    x = x arr[i];
-  }
-}
-print x;
-?
-EOF
-
     local container orgimage service srvc version
+    local -r awkCode="$(mktemp)"
+
+    cat <<'EOF' > "$awkCode"
+#!/usr/bin/awk -f
+# change  image: ${DOCKER_REGISTRY:-afeoscyc-mw.cec.lab.emc.com/}${DEV_TEAM:-devops/}${CONTAINER_OS:-alpine}/kafka/${KAFKA_VERSION:-2.1.0}:${CONTAINER_TAG:-6ccfce35746b02604f59e1f956cb237548baf4ad172400b7f961b646f70a2740}
+# to      image: ${DOCKER_REGISTRY:-afeoscyc-mw.cec.lab.emc.com/}devops/alpine/kafka/2.1.0:6ccfce35746b02604f59e1f956cb237548baf4ad172400b7f961b646f70a2740
+{
+  end = split($0,arr,"$");
+  i = 1;
+  for ( i=1; i<= end; i++ ) {
+    if (i == 1)
+      x = arr[i];
+    else if (i == 2)
+      x = x "$" arr[i];
+    else {
+      sub("{.+-", "", arr[i]);
+      sub("}", "", arr[i]);
+      x = x arr[i];
+    }
+  }
+  print x;
+}
+EOF
 
     local -r image="$(sed -E 's|\s+image:\s+(.+)$|\1|' <<< "$line")"
     while read -r srvc; do
@@ -170,12 +175,12 @@ EOF
         [ "$(grep -cs 'CONTAINER_TAG' <<< "$newline")" -eq 0 ] || newline="${line%\${CONTAINER_TAG*}"
         [ "$(grep -cs "$version" <<< "$newline")" -eq 0 ]      || newline="${newline%:*}:"
         newline="${newline%:*}:$version"
-        echo -n '"promoted":"'$(awk -f awkCode.txt <<< "$newline")'",'
-#        echo -n '"promoted":"'$(awk -f <(echo $awkCode) <<< "$$newline")'",'
+        echo -n '"promoted":"'$(awk -f "$awkCode" <<< "$newline")'",'
         echo '"newimage":"'${orgimage%:*}:$version'"}'
         break
 
     done < <(jq -r '.services|keys[]' <<< "$json")
+    rm "$awkCode"
 }
 
 #----------------------------------------------------------------------------------------------
@@ -219,12 +224,12 @@ function deploy.fixupDCLineAfterRun()
 {
     local line="${1:?}"
     local json="${2:?}"
-    local elm="${3:?}"       # element for 'jq' to select '.newline' or '.promoted' JSON value
+    local property="${3:?}"       # property for 'jq' to select from JSON:  '.newline' or '.promoted'
 
     # update image definition
     if grep -qsE '^\s+image:\s' <<< "$line"; then
         # update workspace/docker-compose.yml when we pull latest images
-        deploy.containerVersion "$line" "$json" | jq -r "$elm"
+        deploy.containerVersion "$line" "$json" | jq -r "$property"
         return 0
     fi
 
@@ -233,7 +238,6 @@ function deploy.fixupDCLineAfterRun()
         # 'keyName' is 'SOMEMODULE_VERSION',  '!keyName' is the current/new value of 'xxxxxxxxxxxxxxx'
         local keyName=$(sed -E 's|^\s+.+\$\{([A-Z0-9]+_VERSION):-[^}]+}.*$|\1|' <<< "$line")
         sed -E 's|^(\s+.*\$\{'${keyName}':-)[^\}]+(}.*)$|\1'${!keyName}'\2|' <<< "$line"
-        return 0
     fi
     return 0
 }
@@ -243,8 +247,8 @@ function deploy.fixupDCLineAfterRun()
 # called before containers are running so that the workspace 'docker-compose' contains latest user changes
 function deploy.fixupDCLineBeforeRun()
 {
-    local line="${1:?}"
-    local version
+    local line="${1:-}"
+    [ -z "${line:-}" ] && return 0
 
     # skip comments
     grep -vE '^\s*#' <<< "$line" && return 0
@@ -253,6 +257,7 @@ function deploy.fixupDCLineBeforeRun()
     if grep -qsE "$line" -f <(versions.get "$CONTAINER_OS" 'echo' | sed -s 's|=.*$||'); then
         # replace version with with actual value in string similar to "${JENKINS_VERSION:-2.164.1}"
         # ie: find 'JENKINS_VERSION' then replace '2.164.1' with value from 'versions' file
+        local version
         for version in $(versions.get "$CONTAINER_OS" 'echo'); do
             [ -z "${version:-}" ] && continue                # skip empty strings
             grep -sqE '^\s*#' <<< "$version" && continue     # skip comments
@@ -434,7 +439,9 @@ function deploy.refreshContainers()
     local -r dc_yaml=${1:?}
 
     # make sure we start the correct versions
-    if [ "${CONTAINER_TAG:-}" = 'latest' ]; then
+    if [ "$(deploy.containerTag)"  = 'dev' ]; then
+        return 0
+    elif [ "${CONTAINER_TAG:-}" = 'latest' ]; then
         term.log '\nINFO: updating containers to latest versions\n' 'white'
     else
         term.log '\n'"INFO: using container fingerprints defined in docker-compose.yml"'\n' 'white'
@@ -477,6 +484,7 @@ function deploy.replaceIpAddresses()
         eval sed -i -r -e "$expr" "$filename"
     fi
 }
+export -f deploy.replaceIpAddresses
 
 #----------------------------------------------------------------------------------------------
 function deploy.restart()
@@ -532,14 +540,15 @@ function deploy.restartContainers()
     term.log 'docker-compose --file '"$dc_yaml"' up --detach\n' 'grey'
     # docker-compose v1.17.0 does not like '--detach'!
     docker-compose --file "$dc_yaml" up -d  && status=$? || status=$?
+    [ $status -eq 0 ] || return $status
 
     # fixup docker-compose.yml to reflect the image versions in use
     if [ "${CONTAINER_TAG:-}" = 'latest' ]; then
         # Updating reference docker-compose.yml
-        deploy.updateContainerReferences "$CONFIG_YAML"
+#        deploy.updateContainerReferences "$CONFIG_YAML"
         deploy.updateContainerReferences "$dc_yaml"
     fi
-    return $status
+    return 0
 }
 
 #----------------------------------------------------------------------------------------------
@@ -601,16 +610,16 @@ function deploy.updateContainerReferences()
     local -r dc_yaml=${1:?}
     local -r promoted=${2:-}
 
-    local elm
+    local property
     if [ "${promoted:-}" ]; then
-        elm='.promoted'
+        property='.promoted'
     else
         term.log '   Updating '"$dc_yaml"'\n'
-        elm='.newline'
+        property='.newline'
     fi
 
     local -r json=$(docker.yamlToJson "$dc_yaml")
-    deploy.updateFile "$CONFIG_YAML" "$dc_yaml" deploy.fixupDCLineAfterRun "$json" "$elm" ||:
+    deploy.updateFile "$CONFIG_YAML" "$dc_yaml" deploy.fixupDCLineAfterRun "$json" "$property" ||:
 }
 
 #----------------------------------------------------------------------------------------------
@@ -626,9 +635,12 @@ function deploy.updateFile()
 
     tmp_file="${dstfile#.*}.tmp"
     (while read -r line; do
-        [ "${line:-}" ] || continue
+        if [ -z "${line:-}" ] || grep -sq '^\s+$' <<< "$line" ; then
+            echo
+            continue
+        fi
         newline=$("$process" "$line" "$@") && status=$? || status=$?
-        [[ "$status" -ne 0 || -z "$newline" ]] && newline="$line"
+        [[ "$status" -ne 0 || -z "${newline:-}" ]] && newline="$line"
         if [ "$(grep -cEs ':\?}' <<< "$newline")" -gt 0 ]; then
             local indent="$(sed -Ee 's|^(\s+).*$|\1|' <<< "$newline")"
             newline="$(eval echo $newline)"
@@ -645,8 +657,12 @@ function deploy.updateFile()
     else
         # otherwise rename 'srcfile' to file.YYYYMMDDhhmmss.bak and rename updated file to 'dstfile'
         # create backup of dstfile before we update it
-        [ -f "$dstfile" ] && mv "$dstfile" "${dstfile%.*}.$(date +"%Y%m%d%H%M%S").${dstfile##*.}.bak"
-        mv "$tmp_file" "$dstfile" "$@"
+        if [ -f "$dstfile" ]; then
+            local backup="${dstfile%.*}.$(date +"%Y%m%d%H%M%S").${dstfile##*.}.bak"
+            backup="$(dirname "$backup")/~$(basename "$backup")"
+            mv "$dstfile" "$backup"
+        fi
+        mv "$tmp_file" "$dstfile"
         return 0   # file updated
     fi
 }
@@ -686,24 +702,31 @@ function deploy.waitForInitializationComplete()
 
     term.log '\n'"INFO: waiting for ${#containers[*]} containers to complete their startup"'\n' 'white'
     while [ "${#finished[*]}" -lt "${#containers[*]}" ]; do
+        # sleep 5 secs between scans
         sleep 5
         lines=()
+
+        # check all known containers
         for container in "${containers[@]}"; do
+            # ignore any that are defined in 'skip.wait'
             if [ $(grep -cs "$container" "${WORKSPACE_DIR}/skip.wait") -gt 0 ] && [ -z "${finished[${container,,}]:-}" ]; then
                 printf '%02d. %s: skipping wait.\n' $(( index++ )) "${container^^}"
                 finished[$container]='0'
             fi
 
+            # look for specific 'end of startup' string in logs
             local text="$(docker logs "${container,,}" 2>&1 | grep -s "Finished executing startup" | head -1 ||: )"
             [ "$text" ] || continue                                        # ignore blank lines
             [ "${container,,}" ] || continue                               # ignore invalid container
             [ -z "${finished[${container,,}]:-}" ] || continue             # ignore if we already have this result
 
+            # keep track of what has finished
             finished[${container,,}]="$text"
             lines+=( "$(sed -Ee 's|^.+Finished executing startup scripts after ||' <<< "$text" | awk -F ':' '{ print ((($1 * 60) + $2) * 60) + $3 }')_${container,,}" )
         done
-        [ "${#lines[*]}" -gt 0 ] || continue
 
+        # print out any containers we foound in this scan
+        [ "${#lines[*]}" -gt 0 ] || continue
         for line in $(printf '%s\n' "${lines[@]}" | sort -t '_' -k 1n,2); do   # sort by time taken to finish startup
             container="${line##*_}"                                            # extract container name
             container="${container,,}"
@@ -712,6 +735,7 @@ function deploy.waitForInitializationComplete()
         done
     done
 
+    # update the run.log from each 'docker logs'
     for container in "${containers[@]}"; do
         if [ $(grep -cs "$container" "${WORKSPACE_DIR}/skip.wait") -gt 0 ]; then
             echo >> "$run_log" 2>&1
