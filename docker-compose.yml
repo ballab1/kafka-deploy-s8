@@ -24,7 +24,7 @@ services:
             - "ubuntu-s3:10.1.3.6"
             - "ubuntu-s4:10.1.3.10"
         hostname: broker
-        image: ${DOCKER_REGISTRY:-ubuntu-s2:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-5.2.1}:${CONTAINER_TAG:-dev}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-5.2.2}:${CONTAINER_TAG:-a7ec80d4ca02a1a535aac6803d0730993871c8be505f2e30049b59716507b0a6}
 #        image: ${DOCKER_REGISTRY:-ubuntu-s2:5000/}${CONTAINER_OS:-alpine}/kafka/${KAFKA_VERSION:-2.2.0}:${CONTAINER_TAG:-e2b6659a704d81d2974b0a6b16f53529fcd12311425904f5f80c64cda8f763de}
         logging:
             driver: json-file
@@ -59,7 +59,7 @@ services:
             - "ubuntu-s4:10.1.3.10"
             - "ubuntu-s5:10.1.3.14"
         hostname: zookeeper
-        image: ${DOCKER_REGISTRY:-ubuntu-s2:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-5.2.1}:${CONTAINER_TAG:-dev}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-5.2.2}:${CONTAINER_TAG:-a7ec80d4ca02a1a535aac6803d0730993871c8be505f2e30049b59716507b0a6}
 #        image: ${DOCKER_REGISTRY:-ubuntu-s2:5000/}${CONTAINER_OS:-alpine}/kafka/${KAFKA_VERSION:-2.2.0}:${CONTAINER_TAG:-e2b6659a704d81d2974b0a6b16f53529fcd12311425904f5f80c64cda8f763de}
         logging:
             driver: json-file
