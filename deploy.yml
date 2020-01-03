@@ -20,4 +20,4 @@ skip_wait:
 versions:
     repo: https://github.com/ballab1/versions
     dir: ${WORKSPACE_DIR}/versions
-    commit: 3c0bbc34d3249a498d934b2d459954b2dba07d5c
+    commit: 589bd45dce67db2e0d62cca31e9ec12acb4093bf
