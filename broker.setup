@@ -26,6 +26,7 @@ if [ ! -f "$isIinitialized" ]; then
         chmod 755 "$target"
     done < <(find "${CONFIG_DIR}/kafka" -mindepth 1 -maxdepth 1 -type f ! -name '.*')
 
+
     touch "$isIinitialized"
 fi
 

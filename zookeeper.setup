@@ -16,6 +16,7 @@ if [ ! -f "$isIinitialized" ]; then
 
     # perform initialization 
     mkdir -p "${workspace_dir}/data" ||:
+
     echo "$KAFKA_ID" > "${workspace_dir}/data/myid"
 
     declare -r bin_dir="${WORKSPACE_DIR}/bin"
