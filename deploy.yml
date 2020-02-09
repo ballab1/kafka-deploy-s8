@@ -1,18 +1,26 @@
+completion_msg:
+    - "If this setup includes a web server, please open the following URL in your browser: http://$HOST_IP"
 
 container_os: alpine
 
 environment:
+    KAFKA_ID: 2
+    LOCATION: home 
     KAFKA_BOOTSTRAP_SERVERS: 's3.ubuntu.home:9092,s4.ubuntu.home:9092'
-    KAFKA_ID: 4
-    LOCATION: home
-    __SECRETS_FILE: /home/bobb/.inf/secret.properties
+    ZOOKEEPER_HOSTS: ${HOST_IP:?}:2181 
+    __SECRETS_FILE: ~/.inf/secret.properties
 
 #skip_wait:
 #    - blue
 
+thirdparty_versions:
+                                        # https://docs.kafka-eagle.org/2.env-and-install/2.installing + https://hub.docker.com/r/xuxiangwork/kafka-eagle
+    KAFDROP_VERSION: 3.23.0             # https://hub.docker.com/r/obsidiandynamics/kafdrop
+    KAFKAHQ_VERSION: 0.11.0             # https://hub.docker.com/r/tchiotludo/kafkahq
+    ZOONAVIGATOR_VERSION: 0.7.1         # https://hub.docker.com/r/elkozmon/zoonavigator
+
 versions:
     repo: https://github.com/ballab1/versions
     dir: ${WORKSPACE_DIR}/.versions
-    commit: 5e66285b9b0938a0a1e2b9899970e5d5b28b4f55
+    commit: 2c3dd4d9684c54a27608e35f27723efbdc7b45b3
     branch: master
-
