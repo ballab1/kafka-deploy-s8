@@ -4,23 +4,24 @@ completion_msg:
 container_os: alpine
 
 environment:
+    CFG_USER_SECRETS: ~/.inf
     KAFKA_ID: 2
     LOCATION: home 
     KAFKA_BOOTSTRAP_SERVERS: 's3.ubuntu.home:9092,s4.ubuntu.home:9092'
-    ZOOKEEPER_HOSTS: ${HOST_IP:?}:2181 
+    ZOOKEEPER_HOSTS: $ZOOKEEPER_HOSTS 
     __SECRETS_FILE: ~/.inf/secret.properties
 
 #skip_wait:
 #    - blue
 
 thirdparty_versions:
-                                        # https://docs.kafka-eagle.org/2.env-and-install/2.installing + https://hub.docker.com/r/xuxiangwork/kafka-eagle
-    KAFDROP_VERSION: 3.23.0             # https://hub.docker.com/r/obsidiandynamics/kafdrop
-    KAFKAHQ_VERSION: 0.11.0             # https://hub.docker.com/r/tchiotludo/kafkahq
-    ZOONAVIGATOR_VERSION: 0.7.1         # https://hub.docker.com/r/elkozmon/zoonavigator
+    KAFDROP_VERSION: 3.23.0             # https://hub.docker.com/r/obsidiandynamics/kafdrop/tags
+    KAFKAHQ_VERSION: 0.12.0             # https://hub.docker.com/r/tchiotludo/kafkahq/tags
+    KAFKA_EAGLE_VERSION: latest         # https://hub.docker.com/r/xuxiangwork/kafka-eagle/tags
+    ZOONAVIGATOR_VERSION: 0.8.0         # https://hub.docker.com/r/elkozmon/zoonavigator/tags
 
 versions:
     repo: https://github.com/ballab1/versions
     dir: ${WORKSPACE_DIR}/.versions
-    commit: 2c3dd4d9684c54a27608e35f27723efbdc7b45b3
+    commit: 1f9e164a03bc18295d588b2166828b74f9b220e6
     branch: master

@@ -119,7 +119,7 @@ services:
                             properties:
                                 bootstrap.servers: "10.1.3.6:9092,10.1.3.10:9092"
         hostname: kafkahq.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/kafkahq:${KAFKAHQ_VERSION:-0.11.0}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/kafkahq:${KAFKAHQ_VERSION:-0.12.0}
         logging:
             driver: json-file
             options:
@@ -183,7 +183,7 @@ services:
             DEBUG_TRACE: ${DEBUG_TRACE:-0}
             HTTP_PORT: 9000
         hostname: zoonavigator.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/zoonavigator:${ZOONAVIGATOR_VERSION:-0.7.1}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/zoonavigator:${ZOONAVIGATOR_VERSION:-0.8.0}
         logging:
             driver: json-file
             options:
@@ -200,3 +200,10 @@ services:
 networks:
    kafka-net:
        name: kafka-container-net
+
+
+secrets:
+   kafka.secret:
+     file: .secrets/secrets/kafkamgr.secret
+   kafka_manager.pwd:
+     file: .secrets/secrets/bobb.pwd
