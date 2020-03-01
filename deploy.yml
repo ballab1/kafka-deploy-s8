@@ -4,11 +4,13 @@ completion_msg:
 container_os: alpine
 
 environment:
+    COMPOSE_HTTP_TIMEOUT: 120
     CFG_USER_SECRETS: ~/.inf
     KAFKA_ID: 2
-    LOCATION: home 
+    KAFKAMGR_UID: 1000
     KAFKA_BOOTSTRAP_SERVERS: 's3.ubuntu.home:9092,s4.ubuntu.home:9092'
-    ZOOKEEPER_HOSTS: $ZOOKEEPER_HOSTS 
+    LOCATION: home 
+    ZOOKEEPER_HOSTS: "$ZOOKEEPER_HOSTS" 
     __SECRETS_FILE: ~/.inf/secret.properties
 
 #skip_wait:
@@ -17,8 +19,9 @@ environment:
 thirdparty_versions:
     KAFDROP_VERSION: 3.23.0             # https://hub.docker.com/r/obsidiandynamics/kafdrop/tags
     KAFKAHQ_VERSION: 0.12.0             # https://hub.docker.com/r/tchiotludo/kafkahq/tags
-    KAFKA_EAGLE_VERSION: latest         # https://hub.docker.com/r/xuxiangwork/kafka-eagle/tags
+#    KAFKA_EAGLE_VERSION: latest         # https://hub.docker.com/r/xuxiangwork/kafka-eagle/tags
     ZOONAVIGATOR_VERSION: 0.8.0         # https://hub.docker.com/r/elkozmon/zoonavigator/tags
+    KAFKA_EAGLE_VERSION: 1.4.3
 
 versions:
     repo: https://github.com/ballab1/versions

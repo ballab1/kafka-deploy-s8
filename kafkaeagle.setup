@@ -2,12 +2,12 @@
 
 #############################################################################
 #
-#   initialization for kafkahq
+#   initialization for kafkaeagle
 #
 #############################################################################
 
-declare -r config_dir="${CONFIG_DIR:?}/kafkahq"
-declare -r workspace_dir="${WORKSPACE_DIR:?}/kafkahq"
+declare -r config_dir="${CONFIG_DIR:?}/kafkaeagle"
+declare -r workspace_dir="${WORKSPACE_DIR:?}/kafkaeagle"
 
 
 declare isIinitialized="$(basename "${BASH_SOURCE[0]}")"
@@ -26,3 +26,8 @@ if deploy.isValidService 'nginx' && [ -d "${config_dir}/nginx.conf" ]; then
     sudo cp -ru "${config_dir}/nginx.conf"/* "${WORKSPACE_DIR}/nginx/conf.d/"
     [ -d "${workspace_dir}/nginx.conf" ] && sudo rm -rf "${workspace_dir}/nginx.conf"
 fi
+
+sudo rm -rf "${workspace_dir}/conf"
+sudo mkdir -p "${workspace_dir}/conf"
+sudo cp -r "${config_dir}"/* "${workspace_dir}/conf"
+#sudo chown -R 1000:1004 "${workspace_dir}/conf"
