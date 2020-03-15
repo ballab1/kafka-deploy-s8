@@ -17,11 +17,9 @@ environment:
 #    - blue
 
 thirdparty_versions:
-    KAFDROP_VERSION: 3.23.0             # https://hub.docker.com/r/obsidiandynamics/kafdrop/tags
+    KAFDROP_VERSION: 3.24.0             # https://hub.docker.com/r/obsidiandynamics/kafdrop/tags
     KAFKAHQ_VERSION: 0.12.0             # https://hub.docker.com/r/tchiotludo/kafkahq/tags
-#    KAFKA_EAGLE_VERSION: latest         # https://hub.docker.com/r/xuxiangwork/kafka-eagle/tags
     ZOONAVIGATOR_VERSION: 0.8.0         # https://hub.docker.com/r/elkozmon/zoonavigator/tags
-    KAFKA_EAGLE_VERSION: 1.4.3
 
 versions:
     repo: https://github.com/ballab1/versions
