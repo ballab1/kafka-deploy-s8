@@ -35,4 +35,14 @@
             - ./kafka-manager/log:/usr/local/kafka-manager/home
             - ./kafka-manager/log:/var/log
 
+networks:
+   kafka-net:
+       name: kafka-container-net
+
+
+secrets:
+   kafka.secret:
+     file: .secrets/secrets/kafkamgr.secret
+   kafka_manager.pwd:
+     file: .secrets/secrets/bobb.pwd
 

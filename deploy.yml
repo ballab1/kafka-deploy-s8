@@ -6,9 +6,10 @@ container_os: alpine
 environment:
     COMPOSE_HTTP_TIMEOUT: 120
     CFG_USER_SECRETS: ~/.inf
+    JMX_PORT: 9999
     KAFKA_ID: 2
     KAFKAMGR_UID: 1000
-    KAFKA_BOOTSTRAP_SERVERS: 's3.ubuntu.home:9092,s4.ubuntu.home:9092'
+    KAFKA_BOOTSTRAP_SERVERS: 's3.ubuntu.home:9092,s4.ubuntu.home:9092,s8.ubuntu.home:9092'
     LOCATION: home 
     ZOOKEEPER_HOSTS: "$ZOOKEEPER_HOSTS" 
     __SECRETS_FILE: ~/.inf/secret.properties
@@ -24,5 +25,5 @@ thirdparty_versions:
 versions:
     repo: https://github.com/ballab1/versions
     dir: ${WORKSPACE_DIR}/.versions
-    commit: bfab20a9c7e5c46bfb64c7618b1ca3ab489d5c00
+    commit: ebb7f9a437686808b17062f51dea300342c151b3
     branch: dev
