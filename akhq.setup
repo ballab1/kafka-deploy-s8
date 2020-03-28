@@ -2,12 +2,12 @@
 
 #############################################################################
 #
-#   initialization for kafkahq
+#   initialization for akhq
 #
 #############################################################################
 
-declare -r config_dir="${CONFIG_DIR:?}/kafkahq"
-declare -r workspace_dir="${WORKSPACE_DIR:?}/kafkahq"
+declare -r config_dir="${CONFIG_DIR:?}/akhq"
+declare -r workspace_dir="${WORKSPACE_DIR:?}/akhq"
 
 
 declare isIinitialized="$(basename "${BASH_SOURCE[0]}")"

@@ -1,0 +1,3 @@
+upstream akhq {
+    server akhq:8080;
+}  
