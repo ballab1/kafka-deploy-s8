@@ -17,7 +17,7 @@ services:
                             properties:
                                 bootstrap.servers: "s3.ubuntu.home:9092,s4.ubuntu.home:9092,s8.home.ubuntu:9092"
         hostname: akhq.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.13.0}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.14.0}
         logging:
             driver: json-file
             options:
@@ -99,7 +99,7 @@ services:
 #            DB_USER: bobb
 #            DB_PASSWORD: 123Oleary
         hostname: kafkaeagle.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-1.4.5}:${CONTAINER_TAG:-d996b844e332463ad724c7bf04f7fcd3fc750296c4260f1cc0c28230facc98a2}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-1.4.6}:${CONTAINER_TAG:-5e8079ab14bdb6d4dd7cf4ce2a4edf9a765000a1f36e5c955beef409fdebb132}
         networks:
             - kafka-net
         ports:
