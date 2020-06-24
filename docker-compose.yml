@@ -99,7 +99,7 @@ services:
 #            DB_USER: bobb
 #            DB_PASSWORD: 123Oleary
         hostname: kafkaeagle.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-1.4.6}:${CONTAINER_TAG:-7d70b5851f96e125ae285c9187fe898a8aad1980d89e610470c7cd129f9ec111}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-1.4.8}:${CONTAINER_TAG:-2717cd8848cb9721c2934f89deec6560f605955ac01b1dca288e2447059c21c7}
         networks:
             - kafka-net
         ports:
