@@ -16,6 +16,8 @@ services:
                         docker-kafka-server:
                             properties:
                                 bootstrap.servers: "s3.ubuntu.home:9092,s4.ubuntu.home:9092,s8.home.ubuntu:9092"
+            JVM_OPTS_FILE: /app/yaml/jvm.options
+            JVM_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7203 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.rmi.port=7203 -Dcom.sun.management.jmxremote.ssl=false -Djava.awt.headless=true -Duser.timezone=UTC"
         hostname: akhq.s4.home
         image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.14.1}
         logging:
@@ -29,7 +31,7 @@ services:
             - "8997:8080"
         volumes:
             - ./akhq/log:/var/log
-#            - ./akhq/yaml:/app/application.yml
+            - ./akhq/yaml:/app/yaml
 
 
     broker:
@@ -66,7 +68,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-5.5.0}:${CONTAINER_TAG:-a85236d391e77c7e0b62518699caf3e51cd21742833ab3c96c34c27ca1f8d827}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-5.5.1}:${CONTAINER_TAG:-4c4a299d02d101576373f815313e604219828ab2b53611038990a620e4277d76}
         logging:
             driver: json-file
             options:
@@ -85,6 +87,39 @@ services:
             - ./broker/logs:/usr/local/confluent/logs
             - ./broker/log:/var/log
 
+
+    kafkamgr:
+        container_name: kafkamgr
+        environment:
+            APPLICATION_SECRET: letmein
+#            BASE_ZK_PATH:
+            DEBUG_TRACE: ${DEBUG_TRACE:-0}
+            CONSUMER_PROPERTIES_FILE: /usr/local/cmak/conf/consumer.properties
+            KAFKA_MANAGER_PASSWORD_FILE: /run/secrets/kafka_manager.pwd
+            KAFKA_MANAGER_USERNAME: admin
+            KAFKA_MANAGER_AUTH_ENABLED: 'false'
+            KAFKA_MANAGER_LOGLEVEL: INFO
+#            KM_HTTP_CONTEXT: /
+            KM_HTTP_CONTEXT: /kafkamgr
+            ZK_HOSTS: zookeeper:2181
+        hostname: kafkamgr
+        image: ${DOCKER_REGISTRY:-ubuntu-s2:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-latest}
+        logging:                              # limit size of logs @runtime so that we do not run out of space 
+            driver: json-file
+            options:
+                max-file: "3"
+                max-size: "10m"
+        networks:
+            - kafka-net
+        ports:                                #ports exposed 
+            - 9000:9000
+        restart: unless-stopped               # only use when building a 'service container'
+        secrets:                              # references to 'secrets' section below 
+            - kafka_manager.pwd
+        volumes:
+            - ./cmak:/usr/local/cmak/home             # do not save aplication logs inside container 
+
+     
 # https://docs.kafka-eagle.org/2.env-and-install/2.installing
     kafkaeagle:
         container_name: kafka-eagle
@@ -95,11 +130,8 @@ services:
         environment:
             KE_HOME: /opt/kafka-eagle
             KAFKA_ZOOKEEPER_HOSTS: s3.ubuntu.home:2181,s4.ubuntu.home:2181
-#            DB_HOST: 10.1.3.6
-#            DB_USER: bobb
-#            DB_PASSWORD: 123Oleary
         hostname: kafkaeagle.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-1.4.8}:${CONTAINER_TAG:-2717cd8848cb9721c2934f89deec6560f605955ac01b1dca288e2447059c21c7}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.1}:${CONTAINER_TAG:-3d8e4f3b2e1d68ba25d18d173a8302245919b431a4b1adb7dca60d1d990d2277}
         networks:
             - kafka-net
         ports:
@@ -129,7 +161,7 @@ services:
             ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
             ZOOKEEPER_SERVER.3: 10.1.3.17:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-5.5.0}:${CONTAINER_TAG:-a85236d391e77c7e0b62518699caf3e51cd21742833ab3c96c34c27ca1f8d827}
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-5.5.1}:${CONTAINER_TAG:-4c4a299d02d101576373f815313e604219828ab2b53611038990a620e4277d76}
         logging:
             driver: json-file
             options:
