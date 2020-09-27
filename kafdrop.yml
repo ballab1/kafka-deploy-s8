@@ -15,7 +15,7 @@
 #            KAFKA_TRUSTSTORE: $(cat kafka.truststore.jks | base64)  # optional
 #            KAFKA_KEYSTORE: $(cat kafka.keystore.jks | base64)      # optional
         hostname: kafdrop.s4.home
-        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/kafdrop:${KAFDROP_VERSION:-3.24.0}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/kafdrop:${KAFDROP_VERSION:-3.24.0}
         logging:
             driver: json-file
             options:

@@ -19,7 +19,7 @@ services:
             KM_HTTP_CONTEXT: /kafkamgr
             ZK_HOSTS: zookeeper:2181
         hostname: kafkamgr
-        image: ${DOCKER_REGISTRY:-ubuntu-s2:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-latest}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-latest}
         logging:                              # limit size of logs @runtime so that we do not run out of space 
             driver: json-file
             options:
