@@ -19,7 +19,7 @@ services:
             JVM_OPTS_FILE: /app/yaml/jvm.options
             JVM_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7203 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.rmi.port=7203 -Dcom.sun.management.jmxremote.ssl=false -Djava.awt.headless=true -Duser.timezone=UTC -Dmicronaut.config.files=/app/yaml/application.yml"
         hostname: akhq.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.14.1}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.16.0}
         logging:
             driver: json-file
             options:
@@ -132,7 +132,7 @@ services:
             KE_HOME: /opt/kafka-eagle
             KAFKA_ZOOKEEPER_HOSTS: ${ZOOKEEPER_HOSTS:?}
         hostname: kafkaeagle.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.1}:${CONTAINER_TAG:-3bb82f863720fbe0fe8c3a0a314cb2a5589d88de9cbc6b35f938a4c73a1e7945}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.2}:${CONTAINER_TAG:-d2e64b8ff1d64352a7d31494959e1f85865c608ac53233f36727050361f2aff7}
         networks:
             - kafka-net
         ports:
