@@ -144,6 +144,45 @@ services:
             - ./kafkaeagle/log:/opt/kafka-eagle/logs
 
 
+    metricbeat:
+        container_name: metricbeat
+        dns: 10.3.1.1
+        dns_search:
+            - ubuntu.home
+            - home
+        environment:
+            OUTPUT_ELASTICSEARCH_HOSTS: "s6.ubuntu.home:9200"
+            SETUP_KIBANA_HOST: "s6.ubuntu.home:5601" 
+        extra_hosts:
+            - "elasticsearch:10.3.1.15" 
+            - "kibana:10.3.1.15" 
+        hostname: metricbeat
+        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/metricbeat:${METRICBEAT_VERSION:-7.9.3}
+        labels:
+            co.elastic.metrics/hosts: '$${data.host}:$${data.port}'
+            co.elastic.metrics/metricsets: status
+            co.elastic.metrics/module: metricbeat
+            co.elastic.metrics/period: 10s
+        logging:
+            driver: json-file
+            options:
+                max-file: "3"
+                max-size: "10m"
+        networks:
+            - kafka-net
+        restart: unless-stopped
+        user: root
+        volumes:
+#            - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
+#            - ./metricbeat/metricbeat.yml:/etc/metricbeat/metricbeat.yml:ro
+            - ./metricbeat/modules.d:/usr/share/metricbeat/modules.d:ro
+            - ./metricbeat/log:/var/log
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+            - /proc:/hostfs/proc:ro
+            - /:/hostfs:ro
+
+
     zookeeper:
         command: confluent zookeeper
         container_name: zookeeper
