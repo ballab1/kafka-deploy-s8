@@ -19,7 +19,7 @@ services:
             JVM_OPTS_FILE: /app/yaml/jvm.options
             JVM_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7203 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.rmi.port=7203 -Dcom.sun.management.jmxremote.ssl=false -Djava.awt.headless=true -Duser.timezone=UTC -Dmicronaut.config.files=/app/yaml/application.yml"
         hostname: akhq.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.16.0}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.17.0}
         logging:
             driver: json-file
             options:
