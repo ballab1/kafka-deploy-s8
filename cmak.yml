@@ -10,7 +10,7 @@ services:
             APPLICATION_SECRET: letmein
 #            BASE_ZK_PATH:
             DEBUG_TRACE: ${DEBUG_TRACE:-0}
-            CONSUMER_PROPERTIES_FILE: /usr/local/kafka-manager/conf/consumer.properties
+            CONSUMER_PROPERTIES_FILE: /usr/local/cmak/conf/consumer.properties
             KAFKA_MANAGER_PASSWORD_FILE: /run/secrets/kafka_manager.pwd
             KAFKA_MANAGER_USERNAME: admin
             KAFKA_MANAGER_AUTH_ENABLED: 'false'
@@ -31,7 +31,7 @@ services:
         secrets:                              # references to 'secrets' section below 
             - kafka_manager.pwd
         volumes:
-            - ./vols/log:/usr/local/kafka-manager/home             # do not save aplication logs inside container 
+            - ./vols/log:/usr/local/cmak/home             # do not save aplication logs inside container 
 
 # secrets only needed for deploy
 secrets:

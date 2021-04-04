@@ -6,6 +6,9 @@
 #
 #############################################################################
 
+[ "${CONFIG_DIR:-}" ] || CONFIG_DIR="$(pwd)"
+[ "${WORKSPACE_DIR:-}" ] || WORKSPACE_DIR="$(pwd)/workspace.$(basename "$CONFIG_DIR")"
+
 declare -r config_dir="${CONFIG_DIR:?}/akhq"
 declare -r workspace_dir="${WORKSPACE_DIR:?}/akhq"
 
@@ -27,3 +30,5 @@ if deploy.isValidService 'nginx' && [ -d "${config_dir}/nginx.conf" ]; then
     [ -d "${workspace_dir}/nginx.conf" ] && sudo rm -rf "${workspace_dir}/nginx.conf"
 fi
 cp -r "${config_dir}/yaml" "${workspace_dir}"
+
+exit 0

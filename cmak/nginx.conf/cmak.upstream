@@ -1,0 +1,3 @@
+upstream cmak {
+    server kafkamgr:9000;
+}  

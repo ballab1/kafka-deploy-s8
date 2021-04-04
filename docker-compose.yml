@@ -28,7 +28,7 @@ services:
         networks:
             - kafka-net
         ports:
-            - "8997:8080"
+            - "8998:8080"
         volumes:
             - ./akhq/log:/var/log
             - ./akhq/yaml:/app/yaml
@@ -69,7 +69,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.0.0}:${CONTAINER_TAG:-2a0b670632582baf5e28e4f9adb49855fce786213a231cad2424f0f7c435994b}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-137ca3e8259af47de9ac1cde531f9b842000854ee38e4a18df1104695cb4f645}
         logging:
             driver: json-file
             options:
@@ -89,6 +89,29 @@ services:
             - ./broker/log:/var/log
 
 
+# https://docs.kafka-eagle.org/2.env-and-install/2.installing
+    kafkaeagle:
+        container_name: kafka-eagle
+        dns: 10.3.1.1
+        dns_search:
+            - ubuntu.home
+            - home
+        environment:
+            KE_HOME: /opt/kafka-eagle
+            KAFKA_ZOOKEEPER_HOSTS: ${ZOOKEEPER_HOSTS:?}
+        hostname: kafkaeagle.s4.home
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.4}:${CONTAINER_TAG:-1bd6438616c381c9e125a018b337af04d7c6f3acf2feac8ca3c49a01cbac0b4d}
+        networks:
+            - kafka-net
+        ports:
+            - "8048:8048"
+            - "8996:8080"
+        restart: unless-stopped
+        volumes:
+            - ./kafkaeagle/conf:/opt/kafka-eagle/conf
+            - ./kafkaeagle/log:/opt/kafka-eagle/logs
+
+
     kafkamgr:
         container_name: kafkamgr
         environment:
@@ -104,7 +127,7 @@ services:
             KM_HTTP_CONTEXT: /kafkamgr
             ZK_HOSTS: zookeeper:2181
         hostname: kafkamgr
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-e6a6824c5501fb58fa923ea30e32e64b8aea4d737bbd01dcd0498a47ecb61409}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-dad47526363951f910cf3c8e67669a51eea75f962058afb1f695fa1290713915}
         logging:                              # limit size of logs @runtime so that we do not run out of space 
             driver: json-file
             options:
@@ -116,33 +139,12 @@ services:
             - 9000:9000
         restart: unless-stopped               # only use when building a 'service container'
         secrets:                              # references to 'secrets' section below 
+            - kafka.secret
             - kafka_manager.pwd
         volumes:
             - ./cmak:/usr/local/cmak/home             # do not save aplication logs inside container 
-
+            - ./cmak/log:/var/log
      
-# https://docs.kafka-eagle.org/2.env-and-install/2.installing
-    kafkaeagle:
-        container_name: kafka-eagle
-        dns: 10.3.1.1
-        dns_search:
-            - ubuntu.home
-            - home
-        environment:
-            KE_HOME: /opt/kafka-eagle
-            KAFKA_ZOOKEEPER_HOSTS: ${ZOOKEEPER_HOSTS:?}
-        hostname: kafkaeagle.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.3}:${CONTAINER_TAG:-d9254728acc5c01f5eddcfe64d07722d91de701a0dd7adc69fa4a8be0021d3f2}
-        networks:
-            - kafka-net
-        ports:
-            - "8048:8048"
-            - "8996:8080"
-        restart: unless-stopped
-        volumes:
-            - ./kafkaeagle/conf:/opt/kafka-eagle/conf
-            - ./kafkaeagle/log:/opt/kafka-eagle/logs
-
 
 #    metricbeat:
 #        container_name: metricbeat
@@ -202,7 +204,7 @@ services:
             ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
             ZOOKEEPER_SERVER.3: s8.ubuntu.home:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.0.0}:${CONTAINER_TAG:-2a0b670632582baf5e28e4f9adb49855fce786213a231cad2424f0f7c435994b}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-137ca3e8259af47de9ac1cde531f9b842000854ee38e4a18df1104695cb4f645}
         logging:
             driver: json-file
             options:
