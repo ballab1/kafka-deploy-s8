@@ -69,7 +69,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-dc9a67d407e2bb479309fc0495d5e84cec072524e6a9c5dd35f03c08341146b6}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-f131f9e593987088cb75c2b6d7ef110a2bb3d79f7487d15d16a66ffa94c80fb8}
         logging:
             driver: json-file
             options:
@@ -100,7 +100,7 @@ services:
             KE_HOME: /opt/kafka-eagle
             KAFKA_ZOOKEEPER_HOSTS: ${ZOOKEEPER_HOSTS:?}
         hostname: kafkaeagle.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.4}:${CONTAINER_TAG:-8745156096294e862406dbc1d8ed169256c7d26be9aaa0c930879b480b01e391}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.4}:${CONTAINER_TAG:-a49bb334fd72cb242f6369c3d3b956c5d16c70552ec388090781fcf903748435}
         networks:
             - kafka-net
         ports:
@@ -127,7 +127,7 @@ services:
             KM_HTTP_CONTEXT: /kafkamgr
             ZK_HOSTS: zookeeper:2181
         hostname: kafkamgr
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-6353b66828b92eeb2bbf29a1cd14fce4f3f09ef352220a50b5c02a26a2b1f552}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-ed278f8b086c89d49e1f2a79ab9c18a718846b82d973b1a373ca9ad5106f6796}
         logging:                              # limit size of logs @runtime so that we do not run out of space 
             driver: json-file
             options:
@@ -204,7 +204,7 @@ services:
             ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
             ZOOKEEPER_SERVER.3: s8.ubuntu.home:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-dc9a67d407e2bb479309fc0495d5e84cec072524e6a9c5dd35f03c08341146b6}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-f131f9e593987088cb75c2b6d7ef110a2bb3d79f7487d15d16a66ffa94c80fb8}
         logging:
             driver: json-file
             options:
