@@ -69,7 +69,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-4e99ef50a430ef5efd5878e55d49e1ae499cee9d3c214decd055ffa78b6b13a3}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-7ae872ff208b32e9cc84007e81f74ae83a557be8e98aaab9b93271abad8e85b0}
         logging:
             driver: json-file
             options:
@@ -100,7 +100,7 @@ services:
             KE_HOME: /opt/kafka-eagle
             KAFKA_ZOOKEEPER_HOSTS: ${ZOOKEEPER_HOSTS:?}
         hostname: kafkaeagle.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.4}:${CONTAINER_TAG:-7bd0eeeafd874996c630360e45082990f50b4f61ca5919b47dab2bb108487bcb}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.5}:${CONTAINER_TAG:-2faeaa8baff0a5b4b0a89f69b32f2262d2ffd9ec59c6635dab8740e78e85034a}
         networks:
             - kafka-net
         ports:
@@ -127,7 +127,7 @@ services:
             KM_HTTP_CONTEXT: /kafkamgr
             ZK_HOSTS: zookeeper:2181
         hostname: kafkamgr
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-70d768239067f21f764f89eb7f6aaa9c8bab3bf85d2e5570f753f36871bd994e}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-d2baff73b538c553f2882b1241303bded0034efb05bda1e7a9cabbd99c42e9df}
         logging:                              # limit size of logs @runtime so that we do not run out of space 
             driver: json-file
             options:
@@ -159,7 +159,7 @@ services:
 #            - "elasticsearch:10.3.1.15" 
 #            - "kibana:10.3.1.15" 
 #        hostname: metricbeat
-#        image: ${DOCKER_REGISTRY:-ubuntu-s2.home:5000/}thirdparty/metricbeat:${METRICBEAT_VERSION:-7.9.3}
+#        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/metricbeat:${METRICBEAT_VERSION:-7.9.3}
 #        labels:
 #            co.elastic.metrics/hosts: '$${data.host}:$${data.port}'
 #            co.elastic.metrics/metricsets: status
@@ -204,7 +204,7 @@ services:
             ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
             ZOOKEEPER_SERVER.3: s8.ubuntu.home:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-4e99ef50a430ef5efd5878e55d49e1ae499cee9d3c214decd055ffa78b6b13a3}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.1.1}:${CONTAINER_TAG:-7ae872ff208b32e9cc84007e81f74ae83a557be8e98aaab9b93271abad8e85b0}
         logging:
             driver: json-file
             options:
