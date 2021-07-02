@@ -18,10 +18,11 @@ environment:
 #    - blue
 
 thirdparty_versions:
-    AKHQ_VERSION: 0.17.0                # https://hub.docker.com/r/tchiotludo/akhq/tags
-    KAFDROP_VERSION: 3.27.0             # https://hub.docker.com/r/obsidiandynamics/kafdrop/tags
-    METRICBEAT_VERSION: 7.10.2
-    ZOONAVIGATOR_VERSION: 1.1.0         # https://hub.docker.com/r/elkozmon/zoonavigator/tags
+    AKHQ_VERSION: '0.18.0'                # https://hub.docker.com/r/tchiotludo/akhq/tags
+    FLINK_VERSION: '1.13.0-scala_2.11'
+    KAFDROP_VERSION: '3.27.0'             # https://hub.docker.com/r/obsidiandynamics/kafdrop/tags
+    METRICBEAT_VERSION: '7.10.2'
+    ZOONAVIGATOR_VERSION: '1.1.0'         # https://hub.docker.com/r/elkozmon/zoonavigator/tags
 
 versions:
     repo: https://github.com/ballab1/versions

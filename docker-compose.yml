@@ -19,7 +19,7 @@ services:
             JVM_OPTS_FILE: /app/yaml/jvm.options
             JVM_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7203 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.rmi.port=7203 -Dcom.sun.management.jmxremote.ssl=false -Djava.awt.headless=true -Duser.timezone=UTC -Dmicronaut.config.files=/app/yaml/application.yml"
         hostname: akhq.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.17.0}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.18.0}
         logging:
             driver: json-file
             options:
@@ -50,7 +50,7 @@ services:
             KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_IP:?}:9092
 #            KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://${HOST_IP:?}:9092
             KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-            KAFKA_BOOTSTRAP_SERVERS: $KAFKA_BOOTSTRAP_SERVERS
+            KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS:?}
             KAFKA_BROKER_ID: ${KAFKA_ID:?}
             KAFKA_COMPRESSION_TYPE: gzip
             KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: 'true'
@@ -69,7 +69,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.2.0}:${CONTAINER_TAG:-8e1530fc37e28b8911a4f6a43cc8f80336f969d8b36a8381861d2969f087d9da}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.2.0}:${CONTAINER_TAG:-f70ff3d8aa607484e3bbf33760cf8be4dbfd0ee4d8589b0b1b89e865b799d147}
         logging:
             driver: json-file
             options:
@@ -100,7 +100,7 @@ services:
             KE_HOME: /opt/kafka-eagle
             KAFKA_ZOOKEEPER_HOSTS: ${ZOOKEEPER_HOSTS:?}
         hostname: kafkaeagle.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.5}:${CONTAINER_TAG:-2faeaa8baff0a5b4b0a89f69b32f2262d2ffd9ec59c6635dab8740e78e85034a}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.5}:${CONTAINER_TAG:-76e1e1f0946a635cdd4dc5a6a5edb6c714cfc8e3c1f4bb3e81b3f5b91743bd30}
         networks:
             - kafka-net
         ports:
@@ -127,7 +127,7 @@ services:
             KM_HTTP_CONTEXT: /kafkamgr
             ZK_HOSTS: zookeeper:2181
         hostname: kafkamgr
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-d2baff73b538c553f2882b1241303bded0034efb05bda1e7a9cabbd99c42e9df}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-0053217a2afd5f2e2b265bc645e487446ce8745f37c08064c728b47cc4647513}
         logging:                              # limit size of logs @runtime so that we do not run out of space 
             driver: json-file
             options:
@@ -204,7 +204,7 @@ services:
             ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
             ZOOKEEPER_SERVER.3: s8.ubuntu.home:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.2.0}:${CONTAINER_TAG:-8e1530fc37e28b8911a4f6a43cc8f80336f969d8b36a8381861d2969f087d9da}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.2.0}:${CONTAINER_TAG:-f70ff3d8aa607484e3bbf33760cf8be4dbfd0ee4d8589b0b1b89e865b799d147}
         logging:
             driver: json-file
             options:
