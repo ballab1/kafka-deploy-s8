@@ -5,7 +5,7 @@ services:
 # https://github.com/tchiotludo/akhq
     akhq:
         container_name: akhq
-        dns: 10.3.1.1
+        dns: 10.3.1.4
         dns_search:
             - ubuntu.home
             - home
@@ -39,7 +39,7 @@ services:
         container_name: broker
         depends_on:
             - zookeeper
-        dns: 10.3.1.1
+        dns: 10.3.1.4
         dns_search:
             - ubuntu.home
             - home
@@ -69,7 +69,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.2.0}:${CONTAINER_TAG:-f15e087910c8cc93504a2a8cc526479da3840f4a44090286299ef94a6db80008}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.2.0}:${CONTAINER_TAG:-c3b9e39bd578943d810f44fe5cfb88edce29037d1871d4365009879997b4eaf7}
         logging:
             driver: json-file
             options:
@@ -92,7 +92,7 @@ services:
 # https://docs.kafka-eagle.org/2.env-and-install/2.installing
     kafkaeagle:
         container_name: kafka-eagle
-        dns: 10.3.1.1
+        dns: 10.3.1.4
         dns_search:
             - ubuntu.home
             - home
@@ -127,7 +127,7 @@ services:
             KM_HTTP_CONTEXT: /kafkamgr
             ZK_HOSTS: zookeeper:2181
         hostname: kafkamgr
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-9df52a51572fc20890524ef0452333e2e66cbc4532df728f09d72c21764366f6}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-fd1a2af4e708bb241e23f77599e649bf1c20ccc290e5adc7426a47244272831e}
         logging:                              # limit size of logs @runtime so that we do not run out of space 
             driver: json-file
             options:
@@ -144,11 +144,32 @@ services:
         volumes:
             - ./cmak:/usr/local/cmak/home             # do not save aplication logs inside container 
             - ./cmak/log:/var/log
+
+
+    kowl:
+        container_name: kowl
+        environment:
+            DEBUG_TRACE: ${DEBUG_TRACE:-0}
+            KAFKA_BROKERS: ${KAFKA_BOOTSTRAP_SERVERS:?}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/kowl:${KOWL_VERSION:-v1.4.0}
+        logging:                              # limit size of logs @runtime so that we do not run out of space 
+            driver: json-file
+            options:
+                max-file: "3"
+                max-size: "10m"
+        networks:
+            - kafka-net
+        ports:                                #ports exposed 
+            - 8997:8080
+        restart: unless-stopped               # only use when building a 'service container'
+        volumes:
+            - ./kowl:/etc/kowl             # do not save aplication logs inside container 
+            - ./kowl/log:/var/log
      
 
 #    metricbeat:
 #        container_name: metricbeat
-#        dns: 10.3.1.1
+#        dns: 10.3.1.4
 #        dns_search:
 #            - ubuntu.home
 #            - home
@@ -188,7 +209,7 @@ services:
     zookeeper:
         command: confluent zookeeper
         container_name: zookeeper
-        dns: 10.3.1.1
+        dns: 10.3.1.4
         dns_search:
             - ubuntu.home
             - home
@@ -204,7 +225,7 @@ services:
             ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
             ZOOKEEPER_SERVER.3: s8.ubuntu.home:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.2.0}:${CONTAINER_TAG:-f15e087910c8cc93504a2a8cc526479da3840f4a44090286299ef94a6db80008}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-6.2.0}:${CONTAINER_TAG:-c3b9e39bd578943d810f44fe5cfb88edce29037d1871d4365009879997b4eaf7}
         logging:
             driver: json-file
             options:
@@ -228,7 +249,7 @@ services:
 #
     zoonavigator:
         container_name: zoonavigator
-        dns: 10.3.1.1
+        dns: 10.3.1.4
         dns_search:
             - ubuntu.home
             - home
