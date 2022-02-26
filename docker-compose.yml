@@ -1,38 +1,6 @@
 version: '3.5'
 
 services:
-## https://hub.docker.com/r/tchiotludo/akhq
-## https://github.com/tchiotludo/akhq
-#    akhq:
-#        container_name: akhq
-#        dns: 10.3.1.4
-#        dns_search:
-#            - ubuntu.home
-#            - home
-#        environment:
-#            AKHQ_CONFIGURATION: |
-#                akhq:
-#                    connections:
-#                        docker-kafka-server:
-#                            properties:
-#                                bootstrap.servers: "s3.ubuntu.home:9092,s4.ubuntu.home:9092,s8.home.ubuntu:9092"
-#            JVM_OPTS_FILE: /app/yaml/jvm.options
-#            JVM_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7203 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.rmi.port=7203 -Dcom.sun.management.jmxremote.ssl=false -Djava.awt.headless=true -Duser.timezone=UTC -Dmicronaut.config.files=/app/yaml/application.yml"
-#        hostname: akhq.s4.home
-#        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/akhq:${AKHQ_VERSION:-0.18.0}
-#        logging:
-#            driver: json-file
-#            options:
-#                max-file: "3"
-#                max-size: "10m" 
-#        networks:
-#            - kafka-net
-#        ports:
-#            - "8998:8080"
-#        volumes:
-#            - ./akhq/log:/var/log
-#            - ./akhq/yaml:/app/yaml
-
 
     broker:
         command: confluent broker
@@ -69,7 +37,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.0.1}:${CONTAINER_TAG:-594cc0cbddd32b48c9fc04ec0729a3a50f2551d165e95d71b0f38a2ee3a47f49}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.0.1}:${CONTAINER_TAG:-12870c320a4dd363e958fc911d3b52ba2f0c0ad180029cf796a0b2eceb1f1492}
         logging:
             driver: json-file
             options:
@@ -89,123 +57,6 @@ services:
             - ./broker/log:/var/log
 
 
-## https://docs.kafka-eagle.org/2.env-and-install/2.installing
-#    kafkaeagle:
-#        container_name: kafka-eagle
-#        dns: 10.3.1.4
-#        dns_search:
-#            - ubuntu.home
-#            - home
-#        environment:
-#            KE_HOME: /opt/kafka-eagle
-#            KAFKA_ZOOKEEPER_HOSTS: ${ZOOKEEPER_HOSTS:?}
-#        hostname: kafkaeagle.s4.home
-#        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-eagle/${KAFKA_EAGLE_VERSION:-2.0.5}:${CONTAINER_TAG:-1d4b0f91a5d190d231ef009a2a545f500682037fbaa53e19fcbd715596e53a1d}
-#        networks:
-#            - kafka-net
-#        ports:
-#            - "8048:8048"
-#            - "8996:8080"
-#        restart: unless-stopped
-#        volumes:
-#            - ./kafkaeagle/conf:/opt/kafka-eagle/conf
-#            - ./kafkaeagle/log:/opt/kafka-eagle/logs
-
-
-#    kafkamgr:
-#        container_name: kafkamgr
-#        environment:
-#            APPLICATION_SECRET: letmein
-##            BASE_ZK_PATH:
-#            DEBUG_TRACE: ${DEBUG_TRACE:-0}
-#            CONSUMER_PROPERTIES_FILE: /usr/local/cmak/conf/consumer.properties
-#            KAFKA_MANAGER_PASSWORD_FILE: /run/secrets/kafka_manager.pwd
-#            KAFKA_MANAGER_USERNAME: admin
-#            KAFKA_MANAGER_AUTH_ENABLED: 'false'
-#            KAFKA_MANAGER_LOGLEVEL: INFO
-##            KM_HTTP_CONTEXT: /
-#            KM_HTTP_CONTEXT: /kafkamgr
-#            ZK_HOSTS: zookeeper:2181
-#        hostname: kafkamgr
-#        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/kafka-manager/${KM_VERSION:-3.0.0.5}:${CONTAINER_TAG:-fd1a2af4e708bb241e23f77599e649bf1c20ccc290e5adc7426a47244272831e}
-#        logging:                              # limit size of logs @runtime so that we do not run out of space 
-#            driver: json-file
-#            options:
-#                max-file: "3"
-#                max-size: "10m"
-#        networks:
-#            - kafka-net
-#        ports:                                #ports exposed 
-#            - 9000:9000
-#        restart: unless-stopped               # only use when building a 'service container'
-#        secrets:                              # references to 'secrets' section below 
-#            - kafka.secret
-#            - kafka_manager.pwd
-#        volumes:
-#            - ./cmak:/usr/local/cmak/home             # do not save aplication logs inside container 
-#            - ./cmak/log:/var/log
-
-
-    kowl:
-        container_name: kowl
-        environment:
-            DEBUG_TRACE: ${DEBUG_TRACE:-0}
-            KAFKA_BROKERS: ${KAFKA_BOOTSTRAP_SERVERS:?}
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/kowl:${KOWL_VERSION:-v1.4.0}
-        logging:                              # limit size of logs @runtime so that we do not run out of space 
-            driver: json-file
-            options:
-                max-file: "3"
-                max-size: "10m"
-        networks:
-            - kafka-net
-        ports:                                #ports exposed 
-            - 8997:8080
-        restart: unless-stopped               # only use when building a 'service container'
-        volumes:
-            - ./kowl:/etc/kowl             # do not save aplication logs inside container 
-            - ./kowl/log:/var/log
-     
-
-#    metricbeat:
-#        container_name: metricbeat
-#        dns: 10.3.1.4
-#        dns_search:
-#            - ubuntu.home
-#            - home
-#        environment:
-#            OUTPUT_ELASTICSEARCH_HOSTS: "s6.ubuntu.home:9200"
-#            SETUP_KIBANA_HOST: "s6.ubuntu.home:5601" 
-#        extra_hosts:
-#            - "elasticsearch:10.3.1.15" 
-#            - "kibana:10.3.1.15" 
-#        hostname: metricbeat
-#        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/metricbeat:${METRICBEAT_VERSION:-7.9.3}
-#        labels:
-#            co.elastic.metrics/hosts: '$${data.host}:$${data.port}'
-#            co.elastic.metrics/metricsets: status
-#            co.elastic.metrics/module: metricbeat
-#            co.elastic.metrics/period: 10s
-#        logging:
-#            driver: json-file
-#            options:
-#                max-file: "3"
-#                max-size: "10m"
-#        networks:
-#            - kafka-net
-#        restart: unless-stopped
-#        user: root
-#        volumes:
-##            - ./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
-##            - ./metricbeat/metricbeat.yml:/etc/metricbeat/metricbeat.yml:ro
-#            - ./metricbeat/modules.d:/usr/share/metricbeat/modules.d:ro
-#            - ./metricbeat/log:/var/log
-#            - /var/run/docker.sock:/var/run/docker.sock
-#            - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
-#            - /proc:/hostfs/proc:ro
-#            - /:/hostfs:ro
-#
-#
     zookeeper:
         command: confluent zookeeper
         container_name: zookeeper
@@ -225,7 +76,7 @@ services:
             ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
             ZOOKEEPER_SERVER.3: s8.ubuntu.home:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.0.1}:${CONTAINER_TAG:-594cc0cbddd32b48c9fc04ec0729a3a50f2551d165e95d71b0f38a2ee3a47f49}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.0.1}:${CONTAINER_TAG:-12870c320a4dd363e958fc911d3b52ba2f0c0ad180029cf796a0b2eceb1f1492}
         logging:
             driver: json-file
             options:
@@ -242,35 +93,6 @@ services:
             - ./zookeeper/data:/usr/local/confluent/data
             - ./zookeeper/logs:/usr/local/confluent/logs 
             - ./zookeeper/log:/var/log
-
-
-##
-## docker.io/elkozmon/zoonavigator
-##
-#    zoonavigator:
-#        container_name: zoonavigator
-#        dns: 10.3.1.4
-#        dns_search:
-#            - ubuntu.home
-#            - home
-#        environment:
-#            DEBUG_TRACE: ${DEBUG_TRACE:-0}
-#            HTTP_PORT: 9000
-#        hostname: zoonavigator.s4.home
-#        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/zoonavigator:${ZOONAVIGATOR_VERSION:-1.1.0}
-#        logging:
-#            driver: json-file
-#            options:
-#                max-file: "3"
-#                max-size: "10m"
-##        network_mode: "host"
-#        networks:
-#            - kafka-net
-#        ports:
-#            - "8999:9000"
-#        restart: unless-stopped
-#        volumes:
-#            - ./zoonavigator/log:/var/log
 
  
 networks:
