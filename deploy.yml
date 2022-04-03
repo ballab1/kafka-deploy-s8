@@ -1,34 +1,32 @@
 completion_msg:
-    - "If this setup includes a web server, please open the following URL in your browser: https://$HOST_IP"
+    - "If this setup includes a web server, please open the following URL in your browser: http://$(hostname -f)"
 
 container_os: alpine
 
 environment:
-    COMPOSE_HTTP_TIMEOUT: 120
+    BROKER_JMX_PORT: 7201
     CFG_USER_SECRETS: ~/.inf
-    JMX_PORT: 7203
-    KAFKA_ID: 2
-    KAFKAMGR_UID: 1000
+    COMPOSE_HTTP_TIMEOUT: 120
+    CONFLUENT_DOCKER_TAG: "7.0.1"
+    KAFKAMGR_UID: 1026
     KAFKA_BOOTSTRAP_SERVERS: s3.ubuntu.home:9092,s4.ubuntu.home:9092,s8.ubuntu.home:9092
+    KAFKA_CLUSTER_ID: 2
+    KAFKA_LAG_EXPORTER: "User:kafkaLagExporter"
     LOCATION: home 
     ZOOKEEPER_HOSTS: s3.ubuntu.home:2181,s4.ubuntu.home:2181,s8.ubuntu.home:2181
+    ZOOKEEPER_JMX_PORT: 7200
     __SECRETS_FILE: ~/.inf/secret.properties
 
 #skip_wait:
 #    - blue
 
 thirdparty_versions:
-    AKHQ_VERSION: '0.18.0'                # https://hub.docker.com/r/tchiotludo/akhq/tags
-    FLINK_VERSION: '1.13.0-scala_2.11'
-    KAFDROP_VERSION: '3.27.0'             # https://hub.docker.com/r/obsidiandynamics/kafdrop/tags
-    KOWL_VERSION: 'v1.4.0'                # https://hub.docker.com/r/obsidiandynamics/kafdrop/tags
-    METRICBEAT_VERSION: '7.10.2'
-    ZOONAVIGATOR_VERSION: '1.1.0'         # https://hub.docker.com/r/elkozmon/zoonavigator/tags
+    KAFKA_LAG_EXPORTER_TAG: 0.6.7
 
 versions:
     repo: https://github.com/ballab1/versions
-    dir: ${WORKSPACE_DIR}/.versions
-    commit: 11ea3aa52da61e0820263686ed4639d3c13c2779
+    dir: "${WORKSPACE_DIR}/.versions"
+    commit: 01c9c3cf176e07ede578a74399d22ee7c3fe5f37
     branch: dev
 
 default_args:

@@ -1,4 +1,0 @@
-server {
-    server_name     cmak;
-    include conf.d/cmak.redirect; 
-}

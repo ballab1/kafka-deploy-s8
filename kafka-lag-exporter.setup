@@ -1,0 +1,38 @@
+#!/bin/bash
+
+#############################################################################
+#
+#   initialization for kafka-lag-exporter
+#
+#############################################################################
+
+[ "${CONFIG_DIR:-}" ] || CONFIG_DIR="$(pwd)" 
+[ "${WORKSPACE_DIR:-}" ] || WORKSPACE_DIR="$(pwd)/workspace.$(basename "$CONFIG_DIR")" 
+
+#---------------------------------------------------------------------------- 
+
+declare -r config_dir="${CONFIG_DIR:?}/kafka-lag-exporter"
+declare -r workspace_dir="${WORKSPACE_DIR:?}/kafka-lag-exporter"
+
+declare isIinitialized="$(basename "${BASH_SOURCE[0]}")"
+isIinitialized="${workspace_dir}/.${isIinitialized%.*}.init"
+if [ ! -f "$isIinitialized" ]; then
+
+    # perform initialization 
+    echo -e "Create user and certificates for kafkaLagExporter"
+    mkdir -p "${workspace_dir}/secrets" ||:
+    SECURITY_DIR="${workspace_dir}/secrets"
+    mkdir -p $SECURITY_DIR
+    (cd $SECURITY_DIR && echo rm -f *.crt *.csr *_creds *.jks *.srl *.key *.pem *.der *.p12)
+    (cd $SECURITY_DIR && ${CONFIG_DIR}/kafka/certs-create-per-user.sh kafkaLagExporter)
+
+    touch "$isIinitialized"
+fi
+
+if true; then
+    [ -e "${workspace_dir}/config" ] && sudo rm -rf "${workspace_dir}/config" ||:
+    mkdir -p "${workspace_dir}/config" ||:
+    sudo cp -r "${config_dir}/"* "${workspace_dir}/config/"
+fi
+
+exit 0
