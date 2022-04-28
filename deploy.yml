@@ -5,6 +5,7 @@ container_os: alpine
 
 environment:
     BROKER_JMX_PORT: 7201
+    BROKER_EXPORT: 7204
     CFG_USER_SECRETS: ~/.inf
     COMPOSE_HTTP_TIMEOUT: 120
     CONFLUENT_DOCKER_TAG: "7.0.1"
@@ -12,9 +13,11 @@ environment:
     KAFKA_BOOTSTRAP_SERVERS: s3.ubuntu.home:9092,s4.ubuntu.home:9092,s8.ubuntu.home:9092
     KAFKA_CLUSTER_ID: 2
     KAFKA_LAG_EXPORTER: "User:kafkaLagExporter"
+    KAFKA_LAG_PORT: 9999
     LOCATION: home 
     ZOOKEEPER_HOSTS: s3.ubuntu.home:2181,s4.ubuntu.home:2181,s8.ubuntu.home:2181
     ZOOKEEPER_JMX_PORT: 7200
+    ZOOKEEPER_EXPORT: 7202
     __SECRETS_FILE: ~/.inf/secret.properties
 
 #skip_wait:
@@ -26,8 +29,8 @@ thirdparty_versions:
 versions:
     repo: https://github.com/ballab1/versions
     dir: "${WORKSPACE_DIR}/.versions"
-    commit: 01c9c3cf176e07ede578a74399d22ee7c3fe5f37
-    branch: dev
+    commit: 8d29b7a388acd8f2998263f85e1d28ca792d5d01
+    branch: master
 
 default_args:
     cmd: 'deploy.restart'
