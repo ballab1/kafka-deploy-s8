@@ -14,8 +14,8 @@ services:
             DEBUG_TRACE: ${DEBUG_TRACE:-0}
             JAVA_HOME: /usr/lib/jvm/java-11-openjdk
             KAFKA_HEAP_OPTS: "-Xmx1G -Xms1G"
-            KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${HOST_IP} -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.rmi.port=${BROKER_JMX_PORT:?} -Dcom.sun.management.jmxremote.port=${BROKER_JMX_PORT:?} -Dzookeeper.sasl.client=ZkClient"
-            KAFKA_JMX_PORT: ${BROKER_JMX_PORT:?}
+            KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.rmi.port=${BROKER_JMX_PORT:?} -Dcom.sun.management.jmxremote.port=${BROKER_JMX_PORT:?} -Djmx.rmi.registry.port=${BROKER_JMX_PORT:?} -Djmx.rmi.port=${BROKER_JMX_PORT:?} -Djava.rmi.server.hostname=${HOST_IP} -Djava.net.preferIPv4Stack=true -Dzookeeper.sasl.client=ZkClient"
+            JMX_PORT: ${BROKER_JMX_PORT:?}
             EXTRA_ARGS: -javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar=${BROKER_EXPORT:?}:/usr/share/jmx-exporter/kafka_broker.yml 
             KAFKA_ADVERTISED_HOST_NAME: ${HOST_IP:?}
             KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_IP:?}:9092
@@ -64,7 +64,7 @@ services:
         dns_search:
             - ubuntu.home
             - home
-        hostname: kafka-lag-exporter.home
+        hostname: kafka-lag-exporter.s4.home
         image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/kafka-lag-exporter:${KAFKA_LAG_EXPORTER_TAG:-0.6.7}
         logging:
             driver: json-file
@@ -92,8 +92,8 @@ services:
             DEBUG_TRACE: ${DEBUG_TRACE:-0}
             JAVA_HOME: /usr/lib/jvm/java-11-openjdk
             KAFKA_HEAP_OPTS: "-Xmx1G -Xms1G"
-            KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${HOST_IP} -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.rmi.port=${ZOOKEEPER_JMX_PORT:?} -Dcom.sun.management.jmxremote.port=${ZOOKEEPER_JMX_PORT:?} -Dzookeeper.sasl.client=ZkClient"
-            KAFKA_JMX_PORT: ${ZOOKEEPER_JMX_PORT:?}
+            KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.rmi.port=${ZOOKEEPER_JMX_PORT:?} -Dcom.sun.management.jmxremote.port=${ZOOKEEPER_JMX_PORT:?} -Djmx.rmi.registry.port=${ZOOKEEPER_JMX_PORT:?} -Djmx.rmi.port=${ZOOKEEPER_JMX_PORT:?} -Djava.rmi.server.hostname=${HOST_IP} -Djava.net.preferIPv4Stack=true -Dzookeeper.sasl.client=ZkClient"
+            JMX_PORT: ${ZOOKEEPER_JMX_PORT:?}
             EXTRA_ARGS: -javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar=${ZOOKEEPER_EXPORT:?}:/usr/share/jmx-exporter/kafka_broker.yml 
             ZOOKEEPER_SERVER_ID: ${KAFKA_CLUSTER_ID:?}
             ZOOKEEPER_CLIENTPORT: 2181
@@ -102,7 +102,7 @@ services:
             ZOOKEEPER_SYNCLIMIT: 5
             ZOOKEEPER_SERVER.1: s3.ubuntu.home:2888:3888
             ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
-            ZOOKEEPER_SERVER.3: s8.ubuntu.home:2888:3888
+            ZOOKEEPER_SERVER.3: s7.ubuntu.home:2888:3888
         hostname: zookeeper.s4.home
         image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.1.0}:${CONTAINER_TAG:-76a2696188383927ec8de6ffd49ea4b859de327446c76060e9f2eee83c27663a}
         logging:
