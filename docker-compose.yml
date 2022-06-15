@@ -36,8 +36,8 @@ services:
             KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
-        hostname: broker.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.1.0}:${CONTAINER_TAG:-76a2696188383927ec8de6ffd49ea4b859de327446c76060e9f2eee83c27663a}
+        hostname: broker.s8.home
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.1.1}:${CONTAINER_TAG:-5bce7f429d08bf7ed86efee35b3ab2aca594b04fc5b60be3a1f4f0a32152e111}
         logging:
             driver: json-file
             options:
@@ -64,7 +64,7 @@ services:
         dns_search:
             - ubuntu.home
             - home
-        hostname: kafka-lag-exporter.s4.home
+        hostname: kafka-lag-exporter.s8.home
         image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/kafka-lag-exporter:${KAFKA_LAG_EXPORTER_TAG:-0.6.7}
         logging:
             driver: json-file
@@ -101,10 +101,10 @@ services:
             ZOOKEEPER_INITLIMIT: 10
             ZOOKEEPER_SYNCLIMIT: 5
             ZOOKEEPER_SERVER.1: s3.ubuntu.home:2888:3888
-            ZOOKEEPER_SERVER.2: 0.0.0.0:2888:3888
-            ZOOKEEPER_SERVER.3: s7.ubuntu.home:2888:3888
+            ZOOKEEPER_SERVER.2: s7.ubuntu.home:2888:3888
+            ZOOKEEPER_SERVER.3: 0.0.0.0:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.1.0}:${CONTAINER_TAG:-76a2696188383927ec8de6ffd49ea4b859de327446c76060e9f2eee83c27663a}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.1.1}:${CONTAINER_TAG:-5bce7f429d08bf7ed86efee35b3ab2aca594b04fc5b60be3a1f4f0a32152e111}
         logging:
             driver: json-file
             options:
