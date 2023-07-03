@@ -24,7 +24,7 @@ environment:
 #    - blue
 
 thirdparty_versions:
-    KAFKA_LAG_EXPORTER_TAG: 0.6.8
+    KAFKA_LAG_EXPORTER_TAG: 0.8.2
 
 versions:
     repo: https://github.com/ballab1/versions
