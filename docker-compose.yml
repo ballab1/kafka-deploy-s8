@@ -16,7 +16,7 @@ services:
             KAFKA_HEAP_OPTS: "-Xmx1G -Xms1G"
             KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.rmi.port=${BROKER_JMX_PORT:?} -Dcom.sun.management.jmxremote.port=${BROKER_JMX_PORT:?} -Djmx.rmi.registry.port=${BROKER_JMX_PORT:?} -Djmx.rmi.port=${BROKER_JMX_PORT:?} -Djava.rmi.server.hostname=${HOST_IP} -Djava.net.preferIPv4Stack=true -Dzookeeper.sasl.client=ZkClient"
             JMX_PORT: ${BROKER_JMX_PORT:?}
-            EXTRA_ARGS: -javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar=${BROKER_EXPORT:?}:/usr/share/jmx-exporter/kafka_broker.yml 
+            EXTRA_ARGS: -javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar=${BROKER_EXPORT:?}:/usr/share/jmx-exporter/kafka_broker.yml
             KAFKA_ADVERTISED_HOST_NAME: ${HOST_IP:?}
             KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_IP:?}:9092
 #            KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://${HOST_IP:?}:9092
@@ -37,7 +37,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s8.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.5.3}:${CONTAINER_TAG:-2b5aeb98907fc23074332d202ce32ab87bfeea035fc5d202db29e371a3a51bca}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.5.3}:${CONTAINER_TAG:-a631b14294e5bfcbaf6c5d93703e4f8d1b068c0303319cf1e1b626a37d6317e8}
         logging:
             driver: json-file
             options:
@@ -53,7 +53,7 @@ services:
             - "9092:9092"
         restart: unless-stopped
         volumes:
-            - "./jmx-exporter/:/usr/share/jmx-exporter" 
+            - "./jmx-exporter/:/usr/share/jmx-exporter"
             - ./broker/data:/usr/local/confluent/data
             - ./broker/logs:/usr/local/confluent/logs
             - ./broker/log:/var/log
@@ -65,7 +65,7 @@ services:
             - ubuntu.home
             - home
         hostname: kafka-lag-exporter.s8.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}thirdparty/kafka-lag-exporter:${KAFKA_LAG_EXPORTER_TAG:?}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}docker.io/seglo/kafka-lag-exporter:${KAFKA_LAG_EXPORTER_TAG:?}
         logging:
             driver: json-file
             options:
@@ -94,7 +94,7 @@ services:
             KAFKA_HEAP_OPTS: "-Xmx1G -Xms1G"
             KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.rmi.port=${ZOOKEEPER_JMX_PORT:?} -Dcom.sun.management.jmxremote.port=${ZOOKEEPER_JMX_PORT:?} -Djmx.rmi.registry.port=${ZOOKEEPER_JMX_PORT:?} -Djmx.rmi.port=${ZOOKEEPER_JMX_PORT:?} -Djava.rmi.server.hostname=${HOST_IP} -Djava.net.preferIPv4Stack=true -Dzookeeper.sasl.client=ZkClient"
             JMX_PORT: ${ZOOKEEPER_JMX_PORT:?}
-            EXTRA_ARGS: -javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar=${ZOOKEEPER_EXPORT:?}:/usr/share/jmx-exporter/kafka_broker.yml 
+            EXTRA_ARGS: -javaagent:/usr/share/jmx-exporter/jmx_prometheus_javaagent-0.16.1.jar=${ZOOKEEPER_EXPORT:?}:/usr/share/jmx-exporter/kafka_broker.yml
             ZOOKEEPER_SERVER_ID: ${KAFKA_CLUSTER_ID:?}
             ZOOKEEPER_CLIENTPORT: 2181
             ZOOKEEPER_TICKTIME: 2000
@@ -104,7 +104,7 @@ services:
             ZOOKEEPER_SERVER.2: s7.ubuntu.home:2888:3888
             ZOOKEEPER_SERVER.3: 0.0.0.0:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.5.3}:${CONTAINER_TAG:-2b5aeb98907fc23074332d202ce32ab87bfeea035fc5d202db29e371a3a51bca}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.5.3}:${CONTAINER_TAG:-a631b14294e5bfcbaf6c5d93703e4f8d1b068c0303319cf1e1b626a37d6317e8}
         logging:
             driver: json-file
             options:
@@ -120,9 +120,9 @@ services:
             - "${ZOOKEEPER_JMX_PORT:?}:${ZOOKEEPER_JMX_PORT:?}"
         restart: unless-stopped
         volumes:
-            - "./jmx-exporter/:/usr/share/jmx-exporter" 
+            - "./jmx-exporter/:/usr/share/jmx-exporter"
             - ./zookeeper/data:/usr/local/confluent/data
-            - ./zookeeper/logs:/usr/local/confluent/logs 
+            - ./zookeeper/logs:/usr/local/confluent/logs
             - ./zookeeper/log:/var/log
 networks:
    kafka-net:
