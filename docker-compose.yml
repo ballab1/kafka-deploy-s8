@@ -10,7 +10,7 @@ services:
             - home
         environment:
             DEBUG_TRACE: ${DEBUG_TRACE:-0}
-            JAVA_HOME: /usr/lib/jvm/java-17-openjdk
+            JAVA_HOME: /usr/lib/jvm/java-21-openjdk
             KAFKA_HEAP_OPTS: "-Xmx1G -Xms1G"
             KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.rmi.port=${BROKER_JMX_PORT:?} -Dcom.sun.management.jmxremote.port=${BROKER_JMX_PORT:?} -Djmx.rmi.registry.port=${BROKER_JMX_PORT:?} -Djmx.rmi.port=${BROKER_JMX_PORT:?} -Djava.rmi.server.hostname=${HOST_IP} -Djava.net.preferIPv4Stack=true -Dzookeeper.sasl.client=ZkClient"
             JMX_PORT: ${BROKER_JMX_PORT:?}
@@ -35,7 +35,7 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: ${ZOOKEEPER_HOSTS:?}
             ZOOKEEPER_TIMEOUT: 6000
         hostname: broker.s8.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.7.1}:${CONTAINER_TAG:-2b6ce97e36243bc298cba59c4916bf2927bd7739595a743a7bbae924c18e3989}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.7.1}:${CONTAINER_TAG:-4d115cc4c1a28d310b4f96d677548babd151080af57033ade994d146d2015100}
         logging:
             driver: json-file
             options:
@@ -88,7 +88,7 @@ services:
             - home
         environment:
             DEBUG_TRACE: ${DEBUG_TRACE:-0}
-            JAVA_HOME: /usr/lib/jvm/java-17-openjdk
+            JAVA_HOME: /usr/lib/jvm/java-21-openjdk
             KAFKA_HEAP_OPTS: "-Xmx1G -Xms1G"
             KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.rmi.port=${ZOOKEEPER_JMX_PORT:?} -Dcom.sun.management.jmxremote.port=${ZOOKEEPER_JMX_PORT:?} -Djmx.rmi.registry.port=${ZOOKEEPER_JMX_PORT:?} -Djmx.rmi.port=${ZOOKEEPER_JMX_PORT:?} -Djava.rmi.server.hostname=${HOST_IP} -Djava.net.preferIPv4Stack=true -Dzookeeper.sasl.client=ZkClient"
             JMX_PORT: ${ZOOKEEPER_JMX_PORT:?}
@@ -102,7 +102,7 @@ services:
             ZOOKEEPER_SERVER.2: s7.ubuntu.home:2888:3888
             ZOOKEEPER_SERVER.3: 0.0.0.0:2888:3888
         hostname: zookeeper.s4.home
-        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.7.1}:${CONTAINER_TAG:-2b6ce97e36243bc298cba59c4916bf2927bd7739595a743a7bbae924c18e3989}
+        image: ${DOCKER_REGISTRY:-s2.ubuntu.home:5000/}${CONTAINER_OS:-alpine}/confluent/${CONFLUENT_VERSION:-7.7.1}:${CONTAINER_TAG:-4d115cc4c1a28d310b4f96d677548babd151080af57033ade994d146d2015100}
         logging:
             driver: json-file
             options:
